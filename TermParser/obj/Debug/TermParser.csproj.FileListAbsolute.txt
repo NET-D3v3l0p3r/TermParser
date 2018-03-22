@@ -1,0 +1,6 @@
+C:\Users\3r0rXx\Documents\Visual Studio 2017\Projects\TermParser\TermParser\bin\Debug\TermParser.exe.config
+C:\Users\3r0rXx\Documents\Visual Studio 2017\Projects\TermParser\TermParser\bin\Debug\TermParser.exe
+C:\Users\3r0rXx\Documents\Visual Studio 2017\Projects\TermParser\TermParser\bin\Debug\TermParser.pdb
+C:\Users\3r0rXx\Documents\Visual Studio 2017\Projects\TermParser\TermParser\obj\Debug\TermParser.csprojResolveAssemblyReference.cache
+C:\Users\3r0rXx\Documents\Visual Studio 2017\Projects\TermParser\TermParser\obj\Debug\TermParser.exe
+C:\Users\3r0rXx\Documents\Visual Studio 2017\Projects\TermParser\TermParser\obj\Debug\TermParser.pdb
