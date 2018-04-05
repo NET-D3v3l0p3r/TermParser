@@ -10,7 +10,8 @@ namespace TermParser
     {
         static void Main(string[] args)
         {
-            Parser p = new Parser("2*(3+1)/4-1*(1+15)+15");
+ 
+            Parser p = new Parser(Console.ReadLine());
             Console.WriteLine(p.Solve());
 
             Console.Read();

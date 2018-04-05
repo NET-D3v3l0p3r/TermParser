@@ -9,20 +9,23 @@ namespace TermParser
     // (2*(1+1))*(2+3)
     public class Operator
     {
-        public int Left { get; set; }
-        public int Right { get; set; }
+        public double Left { get; set; }
+        public double Right { get; set; }
 
         public Operator LeftOperator { get; set; }
         public Operator RightOperator { get; set; }
 
+
         public char OperatorChar { get; set; }
+
+        public Utilities.Priority Priority { get; set; }
         public bool HasPriority { get; set; }
 
-        public int Result { get; private set; }
+        public double Result { get; set; }
 
-        public Operator(char op, int l, int r)
+
+        public Operator(char op, double l, double r)
         {
-
             OperatorChar = op;
             HasPriority = OperatorChar == '*' || OperatorChar == '/';
 
@@ -31,39 +34,21 @@ namespace TermParser
 
         }
 
-        #region dump
-        //public void Solve()
-        //{
-        //    // (5 + 5 * 5 / 5 * 5 + 5)
+        public void UpdateLeft()
+        {
+            if (LeftOperator == null)
+                return;
 
-        //    if (!HasPriority && RightOperator.HasPriority)
-        //    {
-        //        RightOperator.Solve();
-        //    }
-        //    else if (!HasPriority && !RightOperator.HasPriority)
-        //    {
-        //        Process();
-        //        RightOperator.Left = Result;
-        //        RightOperator.Solve();
+            if (!HasPriority)
+                return;
 
-        //    }
-
-        //    if (HasPriority)
-        //    {
-        //        Process();
-
-        //        RightOperator.Left = Result;
-        //        RightOperator.Solve();
-        //    }
-
-        //    if(!HasPriority)
-        //    {
-
-        //    }
-
-        //}
-
-        #endregion
+            if (LeftOperator.HasPriority)
+            {
+                LeftOperator.Result = Result;
+                LeftOperator.UpdateLeft();
+            }
+            else LeftOperator.Right = Result;
+        }
 
         public void Process()
         {
@@ -83,6 +68,9 @@ namespace TermParser
 
                 case '-':
                     Result = Left - Right;
+                    break;
+                case '^':
+                    Result = Math.Pow(Left, Right);
                     break;
             }
 

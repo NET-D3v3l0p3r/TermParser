@@ -17,7 +17,7 @@ namespace TermParser
         public List<Operator> Operators { get; private set; }
         public List<Parantheses> Paranthesis { get; private set; }
 
-        public int Value { get; private set; }
+        public double Value { get; private set; }
 
         public Parantheses(string content)
         {
@@ -69,10 +69,13 @@ namespace TermParser
                 {
                     char current = ContentArray[i];
 
-                    if (!char.IsDigit(current))
+                    if (!char.IsDigit(current) && current != ',')
                     {
-                        Operators.Add(new Operator(current, ExtractIntegerAtOperator(i, false), ExtractIntegerAtOperator(i, true)));
-                        if(Operators.Count > 1)
+                        Operators.Add(new Operator(current,
+                            Utilities.ExtractDoubleAtOperator(ContentArray, i, false),
+                            Utilities.ExtractDoubleAtOperator(ContentArray, i, true)));
+
+                        if (Operators.Count > 1)
                         {
                             Operators[Operators.Count - 1].LeftOperator = Operators[Operators.Count - 2];
                             Operators[Operators.Count - 2].RightOperator = Operators[Operators.Count - 1];
@@ -83,14 +86,16 @@ namespace TermParser
 
                 if (Operators.Count == 0)
                 {
-
-                    Value = int.Parse(FormattedContent);
+                    Value = double.Parse(FormattedContent);
                     return;
                 }
 
 
-                List<Operator> lastPriority = new List<Operator>(Operators);
+
+                List<Operator> operatorBuffer = new List<Operator>(Operators);
                 int priorityCounter = 0;
+
+
                 for (int i = 0; i < Operators.Count; i++)
                 {
                     switch (Operators[i].HasPriority)
@@ -101,31 +106,42 @@ namespace TermParser
                                 Operators[i + 1].Left = Operators[i].Result;
 
                             if (i - 1 >= 0)
+                            {
                                 if (!Operators[i - 1].HasPriority)
                                     Operators[i - 1].Right = Operators[i].Result;
+                                else
+                                {
+                                    Operators[i - 1].Result = Operators[i].Result;
+                                    Operators[i].UpdateLeft();
+                                }
+                                
+                            }
 
                             priorityCounter++;
-                            lastPriority.Remove(Operators[i]);
+                            operatorBuffer.Remove(Operators[i]);
                             break;
                     }
                 }
-                if(priorityCounter == Operators.Count)
+
+                if (priorityCounter == Operators.Count)
                 {
                     Value = Operators[Operators.Count - 1].Result;
-                    lastPriority.Clear();
                     return;
                 }
+                
 
-                for (int i = 0; i < lastPriority.Count; i++)
+
+                for (int i = 0; i < operatorBuffer.Count; i++)
                 {
-                    lastPriority[i].Process();
-                    if (i + 1 >= lastPriority.Count)
+                    operatorBuffer[i].Process();
+                    if (i + 1 >= operatorBuffer.Count)
                         break;
-                    lastPriority[i + 1].Left = lastPriority[i].Result;
+                    operatorBuffer[i + 1].Left = operatorBuffer[i].Result;
                 }
 
-                Value = lastPriority[lastPriority.Count - 1].Result;
-                lastPriority.Clear();
+                Value = operatorBuffer[operatorBuffer.Count - 1].Result;
+                operatorBuffer.Clear();
+
                 return;
             }
 
@@ -133,9 +149,8 @@ namespace TermParser
                 Paranthesis[i].Resolve();
 
             for (int i = 0; i < Paranthesis.Count; i++)
-            {
                 FormattedContent = FormattedContent.Replace("[" + i + "]", Paranthesis[i].Value + "");
-            }
+            
    
             ContentArray = FormattedContent.ToCharArray();
             Paranthesis.Clear();
@@ -145,46 +160,7 @@ namespace TermParser
 
         
 
-        public int ExtractIntegerAtOperator(int index, bool right)
-        {
-            string extractedString = "";
-
-            switch (right)
-            {
-                case true:
-                    
-                    for (int i = index + 1; i < ContentArray.Length; i++)
-                    {
-                        char currentChar = ContentArray[i];
-
-                        if (!char.IsDigit(currentChar))
-                            break;
-
-                        extractedString += currentChar;
-                    }
-
-
-                    break;
-
-                case false:
-
-                    for (int i = index - 1; i >= 0; i--)
-                    {
-                        char currentChar = ContentArray[i];
-
-                        if (!char.IsDigit(currentChar))
-                            break;
-
-                        extractedString += currentChar;
-                    }
-
-                    extractedString = new string(extractedString.Reverse<char>().ToArray());
-
-                    break;
-            }
-
-            return int.Parse(extractedString);
-        }
+    
 
         public string ReplaceFormat()
         {

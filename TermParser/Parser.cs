@@ -17,7 +17,7 @@ namespace TermParser
             _internalCalculator = new Parantheses(Term);
         }
 
-        public int Solve()
+        public double Solve()
         {
             _internalCalculator.Resolve();
             return _internalCalculator.Value;
